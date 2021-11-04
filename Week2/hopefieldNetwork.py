@@ -79,13 +79,27 @@ def update(state, weights, compute_All=True):
     :param weights: matrix
     :return: the updated pattern after 1 iteration of the process
     """
-    newState = np.matmul(weights, state) if compute_All else np.matmul(weights[np.random.randint(0, len(weights))],
-                                                                       state)
-    for i in range(len(newState)):
-        if newState[i] < 0:
-            newState[i] = -1
-        else:
-            newState[i] = 1
+    random = np.random.randint(0, len(weights))
+    newState = state.copy()
+    if compute_All:
+        newState = np.matmul(weights, state)
+        # len_newState = len(newState)
+    else:
+        newState[random] = np.matmul(weights[random], state)
+        # len_newState = 1
+
+    # if len_newState != 1:
+        for i in range(len(newState)):
+            if newState[i] < 0:
+                newState[i] = -1
+            else:
+                newState[i] = 1
+    # else:
+    #     if newState < 0:
+    #         newState = -1
+    #     else:
+    #         newState = 1
+
     return newState
 
 
