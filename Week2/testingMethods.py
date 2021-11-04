@@ -27,11 +27,11 @@ def test_dynamic_async(pattern_matrix, weight_matrix, perturbations, max_iter, i
     answers = []
     x, y = np.shape(pattern_matrix)
 
-    # for i in range(x):
-    perturbed_pattern = hop.perturb_pattern(pattern_matrix[0], perturbations)
-    dynamic_async = hop.dynamics_async(perturbed_pattern, weight_matrix, max_iter, iter_no_change)
-    # last_pattern_async = dynamic_async(len(dynamic_async) - 1)
-    answers.append(hop.pattern_match(pattern_matrix, dynamic_async))
+    for i in range(x):
+        perturbed_pattern = hop.perturb_pattern(pattern_matrix[0], perturbations)
+        dynamic_async = hop.dynamics_async(perturbed_pattern, weight_matrix, max_iter, iter_no_change)
+        # last_pattern_async = dynamic_async(len(dynamic_async) - 1)
+        answers.append(hop.pattern_match(pattern_matrix, dynamic_async))
 
     return answers
 

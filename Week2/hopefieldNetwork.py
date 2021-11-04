@@ -71,47 +71,36 @@ def hebbian_weights(patterns):
     return w
 
 
-def update(state, weights, compute_All=True):
+def update(state, weights):
     """
     Apply the update rule to a pattern given a weight matrix
-    :param compute_All: compute the whole update for the matrix if true or one row if false
     :param state: pattern to update
     :param weights: matrix
     :return: the updated pattern after 1 iteration of the process
     """
-    random = np.random.randint(0, len(weights))
-    newState = state.copy()
-    if compute_All:
-        newState = np.matmul(weights, state)
-        # len_newState = len(newState)
-    else:
-        newState[random] = np.matmul(weights[random], state)
-        # len_newState = 1
+    newState = np.matmul(weights, state)
 
-    # if len_newState != 1:
-        for i in range(len(newState)):
-            if newState[i] < 0:
-                newState[i] = -1
-            else:
-                newState[i] = 1
-    # else:
-    #     if newState < 0:
-    #         newState = -1
-    #     else:
-    #         newState = 1
+    for i in range(len(newState)):
+        if newState[i] < 0:
+            newState[i] = -1
+        else:
+            newState[i] = 1
 
     return newState
 
 
 def update_async(state, weights):
     """
-    Call update with False as additional argument the consequence is that only one row
-    of the weights matrix is updated
+    Only one element of the state is updated with help of the corresponding i-th row of the matrix
     :param state: pattern to update
     :param weights: matrix
     :return: the updated pattern with 1 row of the matrix after 1 iteration of the process
     """
-    return update(state, weights, False)
+    newState = state.copy()
+    random_index = np.random.randint(0, len(state))
+
+    newState[random_index] = -1 if np.matmul(weights[random_index], state) < 0 else 1
+    return newState
 
 
 def dynamics(state, weights, max_iter):
