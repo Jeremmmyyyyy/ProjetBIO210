@@ -124,8 +124,6 @@ def dynamics(state, weights, max_iter):
     return list_of_iterations
 
 
-# TODO try to optimize this method with help of the previous one if possible
-# TODO change list to return
 def dynamics_async(state, weights, max_iter, convergence_num_iter):
     """
     Update the pattern until convergence (repetition of the pattern x time)
