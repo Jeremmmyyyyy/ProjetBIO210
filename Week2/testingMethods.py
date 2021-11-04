@@ -1,20 +1,5 @@
 import numpy as np
-
 from Week2 import hopefieldNetwork as hop
-
-def generate_patterns(num_of_patterns, size_of_patterns):
-    return hop.generate_patterns(num_of_patterns, size_of_patterns)
-
-def create_weight_hebbian(num_of_patterns, size_of_patterns):
-
-    weight_matrix = hop.hebbian_weights(pattern_matrix)
-    return pattern_matrix, weight_matrix
-
-
-def create_weight_storkey():
-
-    weight_matrix = hop.storkey_weights(pattern_matrix)
-    return pattern_matrix, weight_matrix
 
 
 def test_dynamic(pattern_matrix, weight_matrix, perturbations, max_iter):
