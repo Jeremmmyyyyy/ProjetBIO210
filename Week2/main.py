@@ -2,12 +2,12 @@ from Week2 import testingMethods as testing
 from Week2 import hopefieldNetwork as hop
 
 
-pattern_matrix = hop.generate_patterns(160, 1000)
+pattern_matrix = hop.generate_patterns(80, 1000)
 print("Computing process started...")
 hebbian_matrix = hop.hebbian_weights(pattern_matrix)
 print("Hebbian matrix was created")
 storkey_matrix = hop.storkey_weights(pattern_matrix)
-print("Strokey matrix was created")
+print("Storkey matrix was created")
 
 answers1_hebbian = testing.test_dynamic(pattern_matrix, hebbian_matrix, 80, 20)
 testing.analyse_result(answers1_hebbian)

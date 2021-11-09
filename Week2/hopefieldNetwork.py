@@ -38,14 +38,11 @@ def pattern_match(memorized_patterns, pattern):
     :return: true if pattern is in memorize_patterns else false
     """
 
-    # print(f"memorized {memorized_patterns} and {pattern}")
     for mem_pattern in memorized_patterns:
         if (mem_pattern == pattern).all():
-            return True
+            return mem_pattern
 
-    return False
     # TODO update
-    # return any((memorized_patterns[:] == pattern).all(1))
 
 
 def hebbian_weights(patterns):
@@ -82,7 +79,8 @@ def storkey_weights(patterns):
 
         second_term = np.matmul(pattern, h)
 
-        third_term = np.matmul(h, pattern)
+        # third_term = np.matmul(h, pattern)
+        third_term = second_term.T
 
         new_weights = old_weights + (1. / size_of_patterns) * (first_term - second_term - third_term)
         old_weights = new_weights

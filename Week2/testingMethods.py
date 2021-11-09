@@ -11,7 +11,8 @@ def test_dynamic(pattern_matrix, weight_matrix, perturbations, max_iter):
         dynamic = hop.dynamics(perturbed_pattern, weight_matrix, max_iter)
         last_pattern = dynamic[len(dynamic) - 1]
         hop.pattern_match(pattern_matrix, last_pattern)
-        answers.append(hop.pattern_match(pattern_matrix, last_pattern))
+        answer = False if hop.pattern_match(pattern_matrix, dynamic) is None else True
+        answers.append(answer)
 
     return answers
 
@@ -24,14 +25,15 @@ def test_dynamic_async(pattern_matrix, weight_matrix, perturbations, max_iter, i
         perturbed_pattern = hop.perturb_pattern(pattern_matrix[0], perturbations)
         dynamic_async = hop.dynamics_async(perturbed_pattern, weight_matrix, max_iter, iter_no_change)
         # last_pattern_async = dynamic_async(len(dynamic_async) - 1)
-        answers.append(hop.pattern_match(pattern_matrix, dynamic_async))
+        answer = False if hop.pattern_match(pattern_matrix, dynamic_async) is None else True
+        answers.append(answer)
 
     return answers
 
 
 def analyse_result(answers):
-    correct = answers.count(True)
-    wrong = answers.count(False)
+    wrong = answers.count(True)
+    correct = answers.count(False)
     if correct != 0:
         print(f"{correct} success and {wrong} errors : {100 - (100 * wrong / correct)} % percent")
     else:
