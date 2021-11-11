@@ -42,8 +42,6 @@ def pattern_match(memorized_patterns, pattern):
         if (mem_pattern == pattern).all():
             return mem_pattern
 
-    # TODO update
-
 
 def hebbian_weights(patterns):
     """
@@ -69,6 +67,11 @@ def hebbian_weights(patterns):
 
 
 def storkey_weights(patterns):
+    """
+    Apply the Storkey rule on a given patten list
+    :param patterns: list of all the patterns to learn
+    :return: the weight matrix
+    """
     number_of_patterns, size_of_patterns = patterns.shape
     old_weights = np.zeros((size_of_patterns, size_of_patterns))
 
@@ -79,7 +82,6 @@ def storkey_weights(patterns):
 
         second_term = np.matmul(pattern, h)
 
-        # third_term = np.matmul(h, pattern)
         third_term = second_term.T
 
         new_weights = old_weights + (1. / size_of_patterns) * (first_term - second_term - third_term)
@@ -87,20 +89,6 @@ def storkey_weights(patterns):
 
     np.fill_diagonal(old_weights, 0)
     return old_weights
-
-    # mem = patterns.flatten()
-    # n = len(mem)
-    #
-    # old_weights = np.zeros(n)
-    #
-    # hebbian_term = np.outer(mem, mem) - np.identity(n)
-    #
-    # net_inputs = old_weights.dot(mem)
-    #
-    # pre_synaptic = np.outer(mem, net_inputs)
-    # post_synaptic = pre_synaptic.T  # equivalent to np.outer(net_inputs,mem)
-    #
-    # new_weights = old_weights + (1. / n) * (hebbian_term - pre_synaptic - post_synaptic)
 
 
 def update(state, weights):
