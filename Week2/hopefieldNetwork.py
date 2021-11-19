@@ -84,7 +84,8 @@ def storkey_weights(patterns):
 
         for i in range(size_of_patterns):
             for j in range(size_of_patterns):
-                new_weights[i][j] = old_weights[i][j] + (1. / size_of_patterns) * (pattern[i] * pattern[j] - pattern[i] * h[j][i] - pattern[j] * h[i][j])
+                new_weights[i][j] = old_weights[i][j] + (1. / size_of_patterns) * (pattern[i] * pattern[j] - pattern[i]
+                                                                                   * h[j][i] - pattern[j] * h[i][j])
 
         old_weights = new_weights.copy()
 
@@ -220,8 +221,8 @@ def energy(state, weights):
     # return (-1/2) * e_sum
     # print(f"{weights} * {state.T} * {state}")
     wijpi = np.matmul(weights, state.T)
-    sum = -1 / 2 * np.matmul(wijpi, state.T)
-    return sum
+    energy_value = -1 / 2 * np.matmul(wijpi, state.T)
+    return energy_value
 
 
 def compute_energy_for_list(list_of_iterations, weights):
