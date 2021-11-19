@@ -8,6 +8,8 @@ def generate_patterns(num_patterns, pattern_size):
     :param pattern_size: size of the patterns
     :return: a 2d array that contains one pattern per line
     """
+    if num_patterns <= 0 or pattern_size <= 0:
+        raise Exception("ERROR: arguments must be positive")
     return np.random.choice([-1, 1], (num_patterns, pattern_size))
 
 
@@ -72,23 +74,58 @@ def storkey_weights(patterns):
     :param patterns: list of all the patterns to learn
     :return: the weight matrix
     """
+
     number_of_patterns, size_of_patterns = patterns.shape
     old_weights = np.zeros((size_of_patterns, size_of_patterns))
+    new_weights = np.zeros((size_of_patterns, size_of_patterns))
 
     for pattern in patterns:
-        first_term = np.outer(pattern, pattern)
+        h = compute_h(old_weights, pattern)
 
-        h = np.matmul(old_weights, pattern)
+        for i in range(size_of_patterns):
+            for j in range(size_of_patterns):
+                new_weights[i][j] = old_weights[i][j] + (1. / size_of_patterns) * (pattern[i] * pattern[j] - pattern[i] * h[j][i] - pattern[j] * h[i][j])
 
-        second_term = np.matmul(pattern, h)
+        old_weights = new_weights.copy()
 
-        third_term = second_term.T
+    return new_weights
 
-        new_weights = old_weights + (1. / size_of_patterns) * (first_term - second_term - third_term)
-        old_weights = new_weights
 
-    np.fill_diagonal(old_weights, 0)
-    return old_weights
+def compute_h(old_weights, pattern):
+    size = len(old_weights)
+    h = np.zeros((size, size))
+    for i in range(size):
+        for j in range(size):
+            for k in range(size):
+                if (k is not i) and (k is not j):
+                    h[i][j] += old_weights[i][k] * pattern[k]
+    return h
+
+# def storkey_weights(patterns):
+#
+#     number_of_patterns, size_of_patterns = patterns.shape
+#     old_weights = np.zeros((size_of_patterns, size_of_patterns))
+#
+#     for pattern in patterns:
+#         first_term = np.outer(pattern, pattern)
+#         # first_term = np.outer(pattern, pattern)
+#         # h = np.matmul(old_weights, pattern)
+#
+#         h = np.zeros((size_of_patterns, size_of_patterns))
+#         i, j = h.shape
+#         for i in range(i):
+#             for j in range(j):
+#                 for k in range(len(h)):
+#                     if (k is not i) or (k is not j):
+#                         h[i][j] += old_weights[i][k] * pattern[k]
+#
+#         second_term = np.matmul(pattern, h.T)
+#
+#         third_term = np.matmul(pattern, h)
+#
+#         new_weights = old_weights + (1. / size_of_patterns) * (first_term - second_term - third_term)
+#         old_weights = new_weights
+#     return old_weights
 
 
 def update(state, weights):
@@ -132,15 +169,14 @@ def dynamics(state, weights, max_iter):
     :return: the whole state/pattern history
     """
     list_of_iterations = []
-
+    verifyState = state.copy()
     for i in range(max_iter):
-        nextState = update(state, weights)
+        nextState = update(verifyState, weights)
         list_of_iterations.append(nextState)
 
-        if (state == nextState).all():
+        if (verifyState == nextState).all():
             break
-        state = nextState
-
+        verifyState = nextState
     return list_of_iterations
 
 
@@ -153,19 +189,47 @@ def dynamics_async(state, weights, max_iter, convergence_num_iter):
     :param convergence_num_iter: convergence is defined when the pattern is repeated convergence_num_iter times
     :return: the whole state/pattern history
     """
-    list_of_iterations = np.array(state)
+    list_of_iterations = []
     convergence_counter = 0
+    verifyState = state.copy()
 
     for i in range(max_iter):
-        nextState = update_async(state, weights)
-        np.append(list_of_iterations, nextState)
+        nextState = update_async(verifyState, weights)
+        list_of_iterations.append(nextState)
 
-        if (state == nextState).all():
+        if (verifyState == nextState).all():
             convergence_counter += 1
         else:
-            state = nextState
+            verifyState = nextState
 
         if convergence_counter == convergence_num_iter:
             break
-
     return list_of_iterations
+
+
+def energy(state, weights):
+    # newState = state.copy()
+    # weights = weights.copy()
+    # test = np.matmul(weights, newState)
+    # test2 = np.matmul(test, state)
+    # return (-1./2.) * test2
+    # e_sum = 0
+    # for i in range(0, np.shape(state)[0]):
+    #     for j in range(0, np.shape(state)[0]):
+    #         e_sum += weights[i][j] * state[i] * state[j]
+    # return (-1/2) * e_sum
+    # print(f"{weights} * {state.T} * {state}")
+    wijpi = np.matmul(weights, state.T)
+    sum = -1 / 2 * np.matmul(wijpi, state.T)
+    return sum
+
+
+def compute_energy_for_list(list_of_iterations, weights):
+    energy_list = []
+    for pattern in list_of_iterations:
+        energy_list.append(energy(pattern, weights))
+    return energy_list
+    # energy_list = []
+    # for i in range(0, np.shape(list_of_iterations)[0]):
+    #     energy_list.append(energy(list_of_iterations[i], weights))
+    # return energy_list
