@@ -78,8 +78,10 @@ def storkey_weights(patterns):
     number_of_patterns, size_of_patterns = patterns.shape
     old_weights = np.zeros((size_of_patterns, size_of_patterns))
     new_weights = np.zeros((size_of_patterns, size_of_patterns))
-
+    counter = 0
     for pattern in patterns:
+        print(counter)
+        counter += 1
         h = compute_h(old_weights, pattern)
 
         for i in range(size_of_patterns):
@@ -92,6 +94,28 @@ def storkey_weights(patterns):
     return new_weights
 
 
+def storkey_weights_efficient(patterns):
+    number_of_patterns, size_of_patterns = patterns.shape
+    old_weights = np.zeros((size_of_patterns, size_of_patterns))
+    new_weights = np.zeros((size_of_patterns, size_of_patterns))
+    counter = 0
+    for pattern in patterns:
+        print(counter)
+        counter += 1
+        outer_matrix = np.outer(pattern, pattern)
+        h_matrix = compute_h(old_weights, pattern)
+        pre_synaptic_matrix = preAndPost_synaptic_term_computation(pattern, h_matrix.T)
+        post_synaptic_matrix = pre_synaptic_matrix.T
+
+        new_weights = old_weights + (1. / size_of_patterns) * (outer_matrix - pre_synaptic_matrix - post_synaptic_matrix)
+        old_weights = new_weights.copy()
+
+    return new_weights
+
+# def compute_h(old_weights, pattern):
+#     print("ok")
+
+
 def compute_h(old_weights, pattern):
     size = len(old_weights)
     h = np.zeros((size, size))
@@ -101,6 +125,14 @@ def compute_h(old_weights, pattern):
                 if (k is not i) and (k is not j):
                     h[i][j] += old_weights[i][k] * pattern[k]
     return h
+
+
+def preAndPost_synaptic_term_computation(pattern, h):
+    synaptic_matrix = np.zeros((len(pattern), len(pattern)))
+    for i in range(len(pattern)):
+        synaptic_matrix[i] = np.multiply(pattern[i], h[i, :])
+        return synaptic_matrix
+
 
 # def storkey_weights(patterns):
 #
