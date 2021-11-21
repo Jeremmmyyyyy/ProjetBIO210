@@ -52,7 +52,7 @@ def test_dynamic_async_hop(pattern_matrix, weight_matrix, perturb, max_iter, ite
     for i in range(len(pattern_matrix)):
         perturbed_pattern = func.perturb_pattern(pattern_matrix[i], perturb)
         dynamic = func.dynamics_async(perturbed_pattern, weight_matrix, max_iter, iter_no_change)
-        last = dynamic[len(dynamic) - 1]
+        last = dynamic[-1]
         answer = func.pattern_match(pattern_matrix, last)
         answers.append(False if answer is None else True)
     return answers
@@ -65,10 +65,13 @@ def analyse_result(results):
     """
     wrong = results.count(False)
     correct = results.count(True)
+    percent = (correct / len(results)) * 100
     if correct != 0:
-        print(f"{correct} success and {wrong} errors : {100 - (100 * wrong / correct)} % percent")
+        print(f"{correct} success and {wrong} errors : {percent} % percent")
     else:
         print(f"{correct} success and {wrong} errors")
+
+    return percent
 
 
 class Test(TestCase):
@@ -96,20 +99,6 @@ class Test(TestCase):
 
         self.assertTrue(np.allclose(hebbian_result, hebbian_calculated))
 
-    # def test_h(self):
-    #     pattern_matrix = np.array([[1, 1, -1, -1],
-    #                                [1, 1, -1, 1],
-    #                                [-1, 1, -1, 1]])
-    #     old_weights_normal = np.zeros((len(pattern_matrix), len(pattern_matrix)))
-    #     old_weights_efficient = np.zeros((len(pattern_matrix), len(pattern_matrix)))
-    #
-    #     for pattern in pattern_matrix:
-    #         old_weights_normal = func.compute_h(old_weights_normal, pattern)
-    #         print(old_weights_normal)
-    #
-    #         old_weights_efficient = func.compute_h_efficient(old_weights_efficient, pattern)
-    #         print(old_weights_efficient)
-
     def test_storkey_matrix_with_given_pattern(self):
         pattern_matrix = np.array([[1, 1, -1, -1],
                                    [1, 1, -1, 1],
@@ -121,20 +110,6 @@ class Test(TestCase):
                                    [-0.5, 0.25, -0.25, 1.125]])
 
         storkey_calculated = func.storkey_weights(pattern_matrix)
-
-        self.assertTrue(np.allclose(storkey_result, storkey_calculated))
-
-    def test_storkey_matrix_with_given_pattern_efficiency(self):
-        pattern_matrix = np.array([[1, 1, -1, -1],
-                                   [1, 1, -1, 1],
-                                   [-1, 1, -1, 1]])
-
-        storkey_result = np.array([[1.125, 0.25, -0.25, -0.5],
-                                   [0.25, 0.625, -1, 0.25],
-                                   [-0.25, -1, 0.625, -0.25],
-                                   [-0.5, 0.25, -0.25, 1.125]])
-
-        storkey_calculated = func.storkey_weights_efficient(pattern_matrix)
 
         self.assertTrue(np.allclose(storkey_result, storkey_calculated))
 
@@ -154,7 +129,7 @@ class Test(TestCase):
 
     def test_convergence_hebbian_normal(self):
         pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
-        print("Computing started ... \n")
+        print("Computing started hebbian_normal ... \n")
 
         hebbian_matrix = func.hebbian_weights(pattern_matrix)
         print("Hebbian matrix created \n")
@@ -167,9 +142,9 @@ class Test(TestCase):
 
     def test_convergence_storkey_normal(self):
         pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
-        print("Computing started ... \n")
+        print("Computing started storkey_normal ... \n")
 
-        storkey_matrix = func.storkey_weights_efficient(pattern_matrix)
+        storkey_matrix = func.storkey_weights(pattern_matrix)
         print("Storkey matrix created \n")
 
         results_storkey_dynamic = test_dynamic_hop(pattern_matrix,
@@ -180,7 +155,7 @@ class Test(TestCase):
 
     def test_convergence_hebbian_dynamic(self):
         pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
-        print("Computing started ... \n")
+        print("Computing started hebbian_dynamic ... \n")
 
         hebbian_matrix = func.hebbian_weights(pattern_matrix)
         print("Hebbian matrix created \n")
@@ -194,9 +169,9 @@ class Test(TestCase):
 
     def test_convergence_storkey_dynamic(self):
         pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
-        print("Computing started ... \n")
+        print("Computing started storkey_dynamic ... \n")
 
-        storkey_matrix = func.storkey_weights_efficient(pattern_matrix)
+        storkey_matrix = func.storkey_weights(pattern_matrix)
         print("Storkey matrix created \n")
 
         results_storkey_async = test_dynamic_async_hop(pattern_matrix,

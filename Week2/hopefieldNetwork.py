@@ -79,59 +79,22 @@ def storkey_weights(patterns):
     old_weights = np.zeros((size_of_patterns, size_of_patterns))
     new_weights = np.zeros((size_of_patterns, size_of_patterns))
     for pattern in patterns:
-        h = compute_h(old_weights, pattern)
-
-        for i in range(size_of_patterns):
-            for j in range(size_of_patterns):
-                new_weights[i][j] = old_weights[i][j] + (1. / size_of_patterns) * (pattern[i] * pattern[j] - pattern[i]
-                                                                                   * h[j][i] - pattern[j] * h[i][j])
-
-        old_weights = new_weights.copy()
-
-    return new_weights
-
-
-def storkey_weights_efficient(patterns):
-    number_of_patterns, size_of_patterns = patterns.shape
-    old_weights = np.zeros((size_of_patterns, size_of_patterns))
-    new_weights = np.zeros((size_of_patterns, size_of_patterns))
-    for pattern in patterns:
         outer_matrix = np.outer(pattern, pattern)
-        h_matrix = compute_h_efficient(old_weights.copy(), pattern)
+        h_matrix = compute_h(old_weights.copy(), pattern)
         pre_synaptic_matrix = preAndPost_synaptic_term_computation(pattern, h_matrix.T)
         post_synaptic_matrix = pre_synaptic_matrix.T
-        new_weights = old_weights + (1. / size_of_patterns) * (outer_matrix - pre_synaptic_matrix - post_synaptic_matrix)
+        new_weights = old_weights + \
+                      (1. / size_of_patterns) * (outer_matrix - pre_synaptic_matrix - post_synaptic_matrix)
         old_weights = new_weights.copy()
 
     return new_weights
 
 
-def compute_h_efficient(old_weights, pattern):
+def compute_h(old_weights, pattern):
     np.fill_diagonal(old_weights, 0)
     pattern_matrix = np.broadcast_to(pattern[:, None], (len(pattern), len(pattern))).copy()
     np.fill_diagonal(pattern_matrix, 0)
     h = np.matmul(old_weights, pattern_matrix)
-    # temp_matrix = np.zeros((len(pattern), len(pattern)))
-    # h = np.zeros((len(pattern), len(pattern)))
-    #
-    # for i in range(len(pattern)):
-    #     temp_matrix[i] = np.multiply(pattern[i], old_weights[:, i])
-    # temp_matrix = temp_matrix.T
-    # for i in range(len(pattern)):
-    #     for j in range(len(pattern)):
-    #         h[i][j] = sum(y for y in temp_matrix[i] if (y != temp_matrix[i][i] and y != temp_matrix[i][j]))
-    # print(h)
-    return h
-
-
-def compute_h(old_weights, pattern):
-    size = len(old_weights)
-    h = np.zeros((size, size))
-    for i in range(size):
-        for j in range(size):
-            for k in range(size):
-                if (k is not i) and (k is not j):
-                    h[i][j] += old_weights[i][k] * pattern[k]
     return h
 
 
@@ -140,33 +103,6 @@ def preAndPost_synaptic_term_computation(pattern, h):
     for i in range(len(pattern)):
         synaptic_matrix[i] = np.multiply(pattern[i], h[i, :])
     return synaptic_matrix
-
-
-# def storkey_weights(patterns):
-#
-#     number_of_patterns, size_of_patterns = patterns.shape
-#     old_weights = np.zeros((size_of_patterns, size_of_patterns))
-#
-#     for pattern in patterns:
-#         first_term = np.outer(pattern, pattern)
-#         # first_term = np.outer(pattern, pattern)
-#         # h = np.matmul(old_weights, pattern)
-#
-#         h = np.zeros((size_of_patterns, size_of_patterns))
-#         i, j = h.shape
-#         for i in range(i):
-#             for j in range(j):
-#                 for k in range(len(h)):
-#                     if (k is not i) or (k is not j):
-#                         h[i][j] += old_weights[i][k] * pattern[k]
-#
-#         second_term = np.matmul(pattern, h.T)
-#
-#         third_term = np.matmul(pattern, h)
-#
-#         new_weights = old_weights + (1. / size_of_patterns) * (first_term - second_term - third_term)
-#         old_weights = new_weights
-#     return old_weights
 
 
 def update(state, weights):
@@ -230,21 +166,26 @@ def dynamics_async(state, weights, max_iter, convergence_num_iter):
     :param convergence_num_iter: convergence is defined when the pattern is repeated convergence_num_iter times
     :return: the whole state/pattern history
     """
-    list_of_iterations = []
+
+    current_state = state.copy()
+    next_state = update_async(current_state, weights)
+    max_iter_counter = 1
     convergence_counter = 0
-    verifyState = state.copy()
+    list_of_iterations = []
 
-    for i in range(max_iter):
-        nextState = update_async(verifyState, weights)
-        list_of_iterations.append(nextState)
+    while max_iter_counter <= max_iter or convergence_counter < convergence_num_iter:
+        list_of_iterations.append(current_state)
+        current_state = next_state
+        next_state = update_async(next_state, weights)
+        max_iter_counter += 1
 
-        if (verifyState == nextState).all():
+        if (current_state == next_state).all():
             convergence_counter += 1
         else:
-            verifyState = nextState
+            convergence_counter = 0
 
-        if convergence_counter == convergence_num_iter:
-            break
+    list_of_iterations.append(current_state)
+
     return list_of_iterations
 
 
