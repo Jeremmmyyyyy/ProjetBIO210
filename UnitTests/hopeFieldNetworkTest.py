@@ -152,24 +152,38 @@ class Test(TestCase):
 
         self.assertTrue(np.allclose(result, result_func))
 
-    def test_convergence_hebbian_storkey(self):
+    def test_convergence_hebbian_normal(self):
         pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
         print("Computing started ... \n")
+
         hebbian_matrix = func.hebbian_weights(pattern_matrix)
         print("Hebbian matrix created \n")
-        storkey_matrix = func.storkey_weights_efficient(pattern_matrix)
-        print("Storkey matrix created \n")
 
         results_hebbian_dynamic = test_dynamic_hop(pattern_matrix,
                                                    hebbian_matrix,
                                                    perturbations,
                                                    max_iterations_dynamic)
         analyse_result(results_hebbian_dynamic)
+
+    def test_convergence_storkey_normal(self):
+        pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
+        print("Computing started ... \n")
+
+        storkey_matrix = func.storkey_weights_efficient(pattern_matrix)
+        print("Storkey matrix created \n")
+
         results_storkey_dynamic = test_dynamic_hop(pattern_matrix,
                                                    storkey_matrix,
                                                    perturbations,
                                                    max_iterations_dynamic)
         analyse_result(results_storkey_dynamic)
+
+    def test_convergence_hebbian_dynamic(self):
+        pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
+        print("Computing started ... \n")
+
+        hebbian_matrix = func.hebbian_weights(pattern_matrix)
+        print("Hebbian matrix created \n")
 
         results_hebbian_async = test_dynamic_async_hop(pattern_matrix,
                                                        hebbian_matrix,
@@ -177,6 +191,14 @@ class Test(TestCase):
                                                        max_iterations_async,
                                                        async_iterations_without_change)
         analyse_result(results_hebbian_async)
+
+    def test_convergence_storkey_dynamic(self):
+        pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
+        print("Computing started ... \n")
+
+        storkey_matrix = func.storkey_weights_efficient(pattern_matrix)
+        print("Storkey matrix created \n")
+
         results_storkey_async = test_dynamic_async_hop(pattern_matrix,
                                                        storkey_matrix,
                                                        perturbations,

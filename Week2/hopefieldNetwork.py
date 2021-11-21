@@ -95,10 +95,7 @@ def storkey_weights_efficient(patterns):
     number_of_patterns, size_of_patterns = patterns.shape
     old_weights = np.zeros((size_of_patterns, size_of_patterns))
     new_weights = np.zeros((size_of_patterns, size_of_patterns))
-    counter = 0
     for pattern in patterns:
-        print(counter)
-        counter += 1
         outer_matrix = np.outer(pattern, pattern)
         h_matrix = compute_h_efficient(old_weights.copy(), pattern)
         pre_synaptic_matrix = preAndPost_synaptic_term_computation(pattern, h_matrix.T)
