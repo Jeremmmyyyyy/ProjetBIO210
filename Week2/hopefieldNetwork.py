@@ -147,6 +147,7 @@ def dynamics(state, weights, max_iter):
     """
     list_of_iterations = []
     verifyState = state.copy()
+    list_of_iterations.append(verifyState)
     for i in range(max_iter):
         nextState = update(verifyState, weights)
         list_of_iterations.append(nextState)
@@ -173,7 +174,7 @@ def dynamics_async(state, weights, max_iter, convergence_num_iter):
     convergence_counter = 0
     list_of_iterations = []
 
-    while max_iter_counter <= max_iter or convergence_counter < convergence_num_iter:
+    while max_iter_counter <= max_iter and convergence_counter < convergence_num_iter:
         list_of_iterations.append(current_state)
         current_state = next_state
         next_state = update_async(next_state, weights)
@@ -190,17 +191,6 @@ def dynamics_async(state, weights, max_iter, convergence_num_iter):
 
 
 def energy(state, weights):
-    # newState = state.copy()
-    # weights = weights.copy()
-    # test = np.matmul(weights, newState)
-    # test2 = np.matmul(test, state)
-    # return (-1./2.) * test2
-    # e_sum = 0
-    # for i in range(0, np.shape(state)[0]):
-    #     for j in range(0, np.shape(state)[0]):
-    #         e_sum += weights[i][j] * state[i] * state[j]
-    # return (-1/2) * e_sum
-    # print(f"{weights} * {state.T} * {state}")
     wijpi = np.matmul(weights, state.T)
     energy_value = -1 / 2 * np.matmul(wijpi, state.T)
     return energy_value
@@ -211,7 +201,3 @@ def compute_energy_for_list(list_of_iterations, weights):
     for pattern in list_of_iterations:
         energy_list.append(energy(pattern, weights))
     return energy_list
-    # energy_list = []
-    # for i in range(0, np.shape(list_of_iterations)[0]):
-    #     energy_list.append(energy(list_of_iterations[i], weights))
-    # return energy_list

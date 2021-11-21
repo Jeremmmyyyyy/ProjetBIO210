@@ -191,7 +191,7 @@ def dynamics_async(state, weights, max_iter, convergence_num_iter):
     convergence_counter = 0
     history_state = []
 
-    while T <= max_iter or convergence_counter < convergence_num_iter:
+    while T <= max_iter and convergence_counter < convergence_num_iter:
         history_state.append(p0)
         p0 = p1
         p1 = update_async(p1, weights)
