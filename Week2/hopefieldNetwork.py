@@ -78,10 +78,7 @@ def storkey_weights(patterns):
     number_of_patterns, size_of_patterns = patterns.shape
     old_weights = np.zeros((size_of_patterns, size_of_patterns))
     new_weights = np.zeros((size_of_patterns, size_of_patterns))
-    counter = 0
     for pattern in patterns:
-        print(counter)
-        counter += 1
         h = compute_h(old_weights, pattern)
 
         for i in range(size_of_patterns):
@@ -103,17 +100,31 @@ def storkey_weights_efficient(patterns):
         print(counter)
         counter += 1
         outer_matrix = np.outer(pattern, pattern)
-        h_matrix = compute_h(old_weights, pattern)
+        h_matrix = compute_h_efficient(old_weights.copy(), pattern)
         pre_synaptic_matrix = preAndPost_synaptic_term_computation(pattern, h_matrix.T)
         post_synaptic_matrix = pre_synaptic_matrix.T
-
         new_weights = old_weights + (1. / size_of_patterns) * (outer_matrix - pre_synaptic_matrix - post_synaptic_matrix)
         old_weights = new_weights.copy()
 
     return new_weights
 
-# def compute_h(old_weights, pattern):
-#     print("ok")
+
+def compute_h_efficient(old_weights, pattern):
+    np.fill_diagonal(old_weights, 0)
+    pattern_matrix = np.broadcast_to(pattern[:, None], (len(pattern), len(pattern))).copy()
+    np.fill_diagonal(pattern_matrix, 0)
+    h = np.matmul(old_weights, pattern_matrix)
+    # temp_matrix = np.zeros((len(pattern), len(pattern)))
+    # h = np.zeros((len(pattern), len(pattern)))
+    #
+    # for i in range(len(pattern)):
+    #     temp_matrix[i] = np.multiply(pattern[i], old_weights[:, i])
+    # temp_matrix = temp_matrix.T
+    # for i in range(len(pattern)):
+    #     for j in range(len(pattern)):
+    #         h[i][j] = sum(y for y in temp_matrix[i] if (y != temp_matrix[i][i] and y != temp_matrix[i][j]))
+    # print(h)
+    return h
 
 
 def compute_h(old_weights, pattern):
@@ -131,7 +142,7 @@ def preAndPost_synaptic_term_computation(pattern, h):
     synaptic_matrix = np.zeros((len(pattern), len(pattern)))
     for i in range(len(pattern)):
         synaptic_matrix[i] = np.multiply(pattern[i], h[i, :])
-        return synaptic_matrix
+    return synaptic_matrix
 
 
 # def storkey_weights(patterns):

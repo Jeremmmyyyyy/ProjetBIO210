@@ -4,6 +4,35 @@ import numpy as np
 
 
 class Test(TestCase):
+    def test_h(self):
+        a = np.array([1, 2, 3])
+        b = np.broadcast_to(a[:, None], (len(a), len(a))).copy()
+        np.fill_diagonal(b, 0)
+        print(b)
+
+        # a = np.array([[1, 2, 3],
+        #               [1, 2, 3],
+        #               [1, 2, 3]])
+        #
+        # b = np.array([3, 2, 3])
+        #
+        # temp_matrix = np.zeros((len(b), len(b)))
+        # h = np.zeros((len(b), len(b)))
+        #
+        # for i in range(len(b)):
+        #     temp_matrix[i] = np.multiply(b[i], a[:, i])
+        # temp_matrix = temp_matrix.T
+        #
+        # for i in range(len(b)):
+        #     for j in range(len(b)):
+        #         h[i][j] = sum(y for y in temp_matrix[i] if (y != temp_matrix[i][i] and y != temp_matrix[i][j]))
+        # print(h)
+
+
+        # b = sum(y for y in a if y != 1)
+        # print(a)
+        # print(b)
+
     def testAlgorithms(self):
         from Week2 import testingMethods as testing
         from Week2 import hopefieldNetwork as hop

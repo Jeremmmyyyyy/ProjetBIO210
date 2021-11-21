@@ -96,6 +96,20 @@ class Test(TestCase):
 
         self.assertTrue(np.allclose(hebbian_result, hebbian_calculated))
 
+    # def test_h(self):
+    #     pattern_matrix = np.array([[1, 1, -1, -1],
+    #                                [1, 1, -1, 1],
+    #                                [-1, 1, -1, 1]])
+    #     old_weights_normal = np.zeros((len(pattern_matrix), len(pattern_matrix)))
+    #     old_weights_efficient = np.zeros((len(pattern_matrix), len(pattern_matrix)))
+    #
+    #     for pattern in pattern_matrix:
+    #         old_weights_normal = func.compute_h(old_weights_normal, pattern)
+    #         print(old_weights_normal)
+    #
+    #         old_weights_efficient = func.compute_h_efficient(old_weights_efficient, pattern)
+    #         print(old_weights_efficient)
+
     def test_storkey_matrix_with_given_pattern(self):
         pattern_matrix = np.array([[1, 1, -1, -1],
                                    [1, 1, -1, 1],
@@ -107,7 +121,6 @@ class Test(TestCase):
                                    [-0.5, 0.25, -0.25, 1.125]])
 
         storkey_calculated = func.storkey_weights(pattern_matrix)
-        print(storkey_calculated)
 
         self.assertTrue(np.allclose(storkey_result, storkey_calculated))
 
@@ -122,7 +135,6 @@ class Test(TestCase):
                                    [-0.5, 0.25, -0.25, 1.125]])
 
         storkey_calculated = func.storkey_weights_efficient(pattern_matrix)
-        print(storkey_calculated)
 
         self.assertTrue(np.allclose(storkey_result, storkey_calculated))
 
@@ -136,8 +148,9 @@ class Test(TestCase):
         result = np.array([[0, 0, 0],
                            [0, 1, 2],
                            [0, 2, 4]])
+        result_func = func.preAndPost_synaptic_term_computation(pattern, h)
 
-        self.assertTrue(np.allclose(result, func.preAndPost_synaptic_term_computation(pattern, h)))
+        self.assertTrue(np.allclose(result, result_func))
 
     def test_convergence_hebbian_storkey(self):
         pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
