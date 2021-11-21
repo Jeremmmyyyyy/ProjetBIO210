@@ -138,7 +138,14 @@ class Test(TestCase):
                                                    hebbian_matrix,
                                                    perturbations,
                                                    max_iterations_dynamic)
-        analyse_result(results_hebbian_dynamic)
+        percent = analyse_result(results_hebbian_dynamic)
+
+        if number_of_patterns == 80 and perturbations == 80:
+            self.assertTrue(50 < percent <= 100)
+        elif number_of_patterns == 200 and perturbations == 80:
+            self.assertTrue(percent <= 5)
+        else:
+            self.assertTrue(percent != 0)
 
     def test_convergence_storkey_normal(self):
         pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
@@ -151,7 +158,14 @@ class Test(TestCase):
                                                    storkey_matrix,
                                                    perturbations,
                                                    max_iterations_dynamic)
-        analyse_result(results_storkey_dynamic)
+        percent = analyse_result(results_storkey_dynamic)
+
+        if number_of_patterns == 80 and perturbations == 80:
+            self.assertTrue(90 < percent <= 100)
+        elif number_of_patterns == 200 and perturbations == 80:
+            self.assertTrue(90 < percent <= 100)
+        else:
+            self.assertTrue(percent != 0)
 
     def test_convergence_hebbian_dynamic(self):
         pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
@@ -165,7 +179,14 @@ class Test(TestCase):
                                                        perturbations,
                                                        max_iterations_async,
                                                        async_iterations_without_change)
-        analyse_result(results_hebbian_async)
+        percent = analyse_result(results_hebbian_async)
+
+        if number_of_patterns == 80 and perturbations == 80:
+            self.assertTrue(60 < percent <= 100)
+        elif number_of_patterns == 200 and perturbations == 80:
+            self.assertTrue(percent <= 5)
+        else:
+            self.assertTrue(percent != 0)
 
     def test_convergence_storkey_dynamic(self):
         pattern_matrix = func.generate_patterns(number_of_patterns, pattern_size)
@@ -179,4 +200,11 @@ class Test(TestCase):
                                                        perturbations,
                                                        max_iterations_async,
                                                        async_iterations_without_change)
-        analyse_result(results_storkey_async)
+        percent = analyse_result(results_storkey_async)
+
+        if number_of_patterns == 80 and perturbations == 80:
+            self.assertTrue(90 < percent <= 100)
+        elif number_of_patterns == 200 and perturbations == 80:
+            self.assertTrue(90 < percent <= 100)
+        else:
+            self.assertTrue(percent != 0)
